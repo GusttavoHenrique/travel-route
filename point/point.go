@@ -6,7 +6,7 @@ import (
 )
 
 type Point struct {
-	name     string
+	Name     string
 	estimate float64
 }
 
@@ -19,7 +19,7 @@ func NewPoint(name string) (*Point, error) {
 	}
 
 	return &Point{
-		name:     name,
+		Name:     name,
 		estimate: math.Inf(1),
 	}, nil
 }

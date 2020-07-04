@@ -8,8 +8,8 @@ func TestNewPoint(t *testing.T) {
 	newPoint, err := NewPoint(name)
 	validateInstancePoint(newPoint, err, t)
 
-	if newPoint.name != name {
-		t.Errorf("Error actual name = %v, and expected name = %v.", newPoint.name, name)
+	if newPoint.Name != name {
+		t.Errorf("Error actual name = %v, and expected name = %v.", newPoint.Name, name)
 	} else if newPoint.estimate <= 0 {
 		t.Errorf("Unexpected negative estimate.")
 	}

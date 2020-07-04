@@ -13,9 +13,10 @@ type Route struct {
 }
 
 const (
-	errOriginIsMissing      = "The 'origin' field is mandatory"
-	errDestinationIsMissing = "The 'destination' field is mandatory"
-	errPriceIsMissing       = "The attribute 'price' is missing or invalid"
+	errSameOriginAndDestination = "The 'origin' field cannot be the same of the 'destination' field"
+	errOriginIsMissing          = "The 'origin' field is mandatory"
+	errDestinationIsMissing     = "The 'destination' field is mandatory"
+	errPriceIsMissing           = "The attribute 'price' is missing or invalid"
 )
 
 // NewRoute create a new route instance
@@ -45,6 +46,10 @@ func NewBestRoute(origin string, destination string) (*Route, error) {
 }
 
 func createAndValidateRoute(origin string, destination string) (*Route, error) {
+	if origin == destination {
+		return nil, errors.New(errSameOriginAndDestination)
+	}
+
 	initialPoint, err := point.NewPoint(origin)
 	if err != nil {
 		return nil, errors.Wrap(err, errOriginIsMissing)
