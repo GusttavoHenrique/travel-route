@@ -14,7 +14,7 @@ func TestRouteCreation(t *testing.T) {
 	route, err := createAndValidateRoute(origin, destination)
 	validateNewRoute(route, err, t)
 
-	if route.initialPoint.Name == route.finalPoint.Name {
+	if route.InitialPoint.Name == route.FinalPoint.Name {
 		t.Error(errSameOriginAndDestination)
 	}
 }
@@ -44,14 +44,14 @@ func TestNewRoute(t *testing.T) {
 			} else {
 				validateNewRoute(newRoute, err, t)
 
-				if newRoute.initialPoint.Name != origin {
-					t.Errorf("Error actual = %v, and expected = %v.", newRoute.initialPoint.Name, origin)
-				} else if newRoute.finalPoint.Name != destination {
-					t.Errorf("Error actual = %v, and expected = %v.", newRoute.finalPoint.Name, destination)
-				} else if newRoute.price == 0 {
+				if newRoute.InitialPoint.Name != origin {
+					t.Errorf("Error actual = %v, and expected = %v.", newRoute.InitialPoint.Name, origin)
+				} else if newRoute.FinalPoint.Name != destination {
+					t.Errorf("Error actual = %v, and expected = %v.", newRoute.FinalPoint.Name, destination)
+				} else if newRoute.Price == 0 {
 					t.Fatal("Expected price in new route instance.")
-				} else if newRoute.price != price {
-					t.Errorf("Error actual = %v, and expected = %v.", newRoute.price, price)
+				} else if newRoute.Price != price {
+					t.Errorf("Error actual = %v, and expected = %v.", newRoute.Price, price)
 				}
 			}
 		})
@@ -78,13 +78,13 @@ func TestBestRoute(t *testing.T) {
 			} else {
 				validateNewRoute(newRoute, err, t)
 
-				if newRoute.initialPoint.Name != origin {
-					t.Errorf("Error actual = %v, and expected = %v.", newRoute.initialPoint.Name, origin)
-				} else if newRoute.finalPoint.Name != destination {
-					t.Errorf("Error actual = %v, and expected = %v.", newRoute.finalPoint.Name, destination)
-				} else if newRoute.price == 0 {
+				if newRoute.InitialPoint.Name != origin {
+					t.Errorf("Error actual = %v, and expected = %v.", newRoute.InitialPoint.Name, origin)
+				} else if newRoute.FinalPoint.Name != destination {
+					t.Errorf("Error actual = %v, and expected = %v.", newRoute.FinalPoint.Name, destination)
+				} else if newRoute.Price == 0 {
 					t.Fatal("Expected price in new route instance.")
-				} else if newRoute.price >= 0 {
+				} else if newRoute.Price >= 0 {
 					t.Errorf("Unexpected positive price.")
 				}
 			}
@@ -105,9 +105,9 @@ func validateNewRoute(route *Route, err error, t *testing.T) {
 		t.Error("Unexpected error.")
 	} else if route == nil {
 		t.Fatal("Expected new route instance.")
-	} else if route.initialPoint == nil {
+	} else if route.InitialPoint == nil {
 		t.Fatal("Expected final point in new route instance.")
-	} else if route.finalPoint == nil {
+	} else if route.FinalPoint == nil {
 		t.Fatal("Expected initial point in new route instance.")
 	}
 }

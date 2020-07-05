@@ -7,9 +7,10 @@ import (
 )
 
 type Route struct {
-	initialPoint *point.Point
-	finalPoint   *point.Point
-	price        float64
+	InitialPoint *point.Point
+	FinalPoint   *point.Point
+	Price        float64
+	BestRoute    []*point.Point
 }
 
 const (
@@ -17,6 +18,7 @@ const (
 	errOriginIsMissing          = "The 'origin' field is mandatory"
 	errDestinationIsMissing     = "The 'destination' field is mandatory"
 	errPriceIsMissing           = "The attribute 'price' is missing or invalid"
+	errBestRouteNotFound        = "The best route not found"
 )
 
 // NewRoute create a new route instance
@@ -30,7 +32,7 @@ func NewRoute(origin string, destination string, price float64) (*Route, error) 
 		return nil, errors.New(errPriceIsMissing)
 	}
 
-	route.price = price
+	route.Price = price
 	return route, nil
 }
 
@@ -41,7 +43,7 @@ func NewBestRoute(origin string, destination string) (*Route, error) {
 		return nil, err
 	}
 
-	route.price = math.Inf(-1)
+	route.Price = math.Inf(-1)
 	return route, nil
 }
 
@@ -61,7 +63,25 @@ func createAndValidateRoute(origin string, destination string) (*Route, error) {
 	}
 
 	return &Route{
-		initialPoint: initialPoint,
-		finalPoint:   finalPoint,
+		InitialPoint: initialPoint,
+		FinalPoint:   finalPoint,
 	}, nil
+}
+
+func (route *Route) GetBestRouteStr() (string, error) {
+	list := route.BestRoute
+	if len(list) != 0 {
+		return "", errors.New(errBestRouteNotFound)
+	}
+
+	bestRoute := ""
+	for _, r := range list {
+		if bestRoute != "" {
+			bestRoute = bestRoute + " - "
+		}
+
+		bestRoute = bestRoute + r.Name
+	}
+
+	return bestRoute, nil
 }
