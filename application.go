@@ -1,35 +1,41 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"log"
+	"travel-route/http"
+	"travel-route/route"
 	"travel-route/terminal"
 )
 
 func main() {
-	//err := terminal.LoadRoutesFromFile()
-	//if err != nil {
-	//	log.Fatalf(err.Error())
-	//}
+	db := &route.Db{}
+	db.ConfigDb()
 
-	terminalCommandsListener()
-
-	//server := &http.Server {}
-	//server.Config()
-}
-
-func terminalCommandsListener() {
-	for {
-		bestRoute, err := terminal.GetInputRoute()
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-
-		bestRouteStr, err := bestRoute.GetBestRouteStr()
-		if err != nil {
-			fmt.Print(err)
-		} else {
-			fmt.Printf("best route: %s > %f\n", bestRouteStr, bestRoute.Price)
-		}
+	routeService := &route.Service{
+		Repo: &route.Repository{
+			Db: db,
+		},
 	}
+	routeController := route.NewController(routeService)
+	cmdTerminal := terminal.NewTerminal(routeService)
+
+	var pathFile string
+	flag.StringVar(&pathFile, "file", "", "The file flag is mandatory")
+	flag.Parse()
+
+	err := cmdTerminal.LoadRoutesFromFile(pathFile)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	// terminal command listener
+	go cmdTerminal.TerminalListener()
+
+	// Init http server
+	httpServer := http.NewServer()
+	httpServer.RegisterEndpoint("GET", "/routes", routeController.GetRoutes)
+	httpServer.RegisterEndpoint("POST", "/route", routeController.PostRoute)
+	httpServer.RegisterEndpoint("*", "/", httpServer.DefaultHandler)
+	httpServer.Start()
 }
