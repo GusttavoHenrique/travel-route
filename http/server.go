@@ -56,7 +56,7 @@ func (s *Server) Handler(method string, path string, handler func(writer http.Re
 
 // DefaultHandler generate the default response handler
 func (s *Server) DefaultHandler(writer http.ResponseWriter, reader *http.Request) {
-	s.SetResponseError(writer, messageNotFound, http.StatusNotFound)
+	s.SetResponseNotFound(writer, messageNotFound)
 }
 
 // Start start the http server listener
@@ -119,6 +119,10 @@ func (s *Server) SetResponseCreated(writer http.ResponseWriter) {
 
 func (s *Server) SetResponseBadRequest(writer http.ResponseWriter, message string) {
 	s.SetResponseError(writer, message, http.StatusBadRequest)
+}
+
+func (s *Server) SetResponseNotFound(writer http.ResponseWriter, message string) {
+	s.SetResponseError(writer, message, http.StatusNotFound)
 }
 
 func (s *Server) SetResponseInternalError(writer http.ResponseWriter) {

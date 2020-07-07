@@ -41,7 +41,7 @@ func (c *Controller) GetRoutes(w http2.ResponseWriter, r *http2.Request) {
 	if routes, err := c.service.Find(request.Origin, request.Destination, request.Price); err == nil {
 		c.HttpServer.SetResponse(w, routes, c.HttpServer.StatusOk())
 	} else {
-		c.HttpServer.SetResponseInternalError(w)
+		c.HttpServer.SetResponseNotFound(w, err.Error())
 	}
 }
 
@@ -61,7 +61,7 @@ func (c *Controller) GetBestRoute(w http2.ResponseWriter, r *http2.Request) {
 	if routes, err := c.service.FindBestRoute(bestRoute); err == nil {
 		c.HttpServer.SetResponse(w, routes, c.HttpServer.StatusOk())
 	} else {
-		c.HttpServer.SetResponseInternalError(w)
+		c.HttpServer.SetResponseNotFound(w, err.Error())
 	}
 }
 

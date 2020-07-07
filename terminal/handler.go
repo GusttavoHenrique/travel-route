@@ -84,12 +84,12 @@ func (t *Terminal) LoadRoutesFromFile(pathFile string) error {
 // TerminalListener create a listener for terminal command line
 func (t *Terminal) TerminalListener() {
 	for {
-		route, err := t.GetInputRoute()
+		inputRoute, err := t.GetInputRoute()
 
 		if err != nil {
 			fmt.Printf("%s\n", err)
 		} else {
-			bestRoute, err := t.routeService.FindBestRoute(route)
+			bestRoute, err := t.routeService.FindBestRoute(inputRoute)
 			if err != nil {
 				fmt.Printf("%s\n", err)
 			} else {
