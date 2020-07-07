@@ -2,64 +2,71 @@ package terminal
 
 import (
 	"bufio"
-	"flag"
-	"fmt"
 	"github.com/pkg/errors"
 	"os"
+	"strconv"
 	"strings"
 	"travel-route/route"
 )
 
-const (
-	errMissingArgs         = "The args is missing or invalid"
-	errMissingBestRoute    = "The request best route is missing or invalid"
-	errReadingInformedFile = "Error reading routes from informed file"
-	errSavingRoutes        = "Error saving routes"
-)
-
-func GetInputRoute() (*route.Route, error) {
-	fmt.Print("please enter the route: ")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-
-	input := scanner.Text()
-	if input == "" {
-		return nil, errors.New(errMissingArgs)
-	}
-
-	points := strings.Split(input, " - ")
-	if len(points) < 2 || points[0] == "" || points[1] == "" {
-		return nil, errors.New(errMissingArgs)
-	}
-
-	bestRoute, err := route.NewBestRoute(points[0], points[1])
-	if bestRoute == nil {
-		return nil, errors.New(errMissingBestRoute)
-	}
-
-	return bestRoute, err
+type Service struct {
+	routeRepo *route.Repository
 }
 
-func LoadRoutesFromFile() error {
-	var pathFile string
-	flag.StringVar(&pathFile, "file", "The file flag is mandatory", "")
-	flag.Parse()
+const (
+	errEmptyFile                     = "Empty file"
+	errConvertingInformedPrice       = "Error converting the informed price"
+	errReadingRoutesFromFile         = "Error reading routes from informed file"
+	errLoadingRoutesFromFile         = "Error loading routes from informed file"
+	errScanningInformedFile          = "Error scanning routes from informed file"
+	errSaveAllRoutesFromInformedFile = "Error saving all routes from informed file"
+	errSavingInformedFile            = "Error saving routes from informed file"
+)
 
-	routes, err := route.GetRoutesFromFile(pathFile)
+func (s *Service) saveRoutesFromFile(filePath string) ([]*route.Route, error) {
+	file, err := os.Open(filePath)
+	defer file.Close()
 	if err != nil {
-		return errors.New(errReadingInformedFile)
+		return nil, errors.New(errReadingRoutesFromFile)
 	}
 
-	for _, r := range routes {
-		err := route.Create(r, pathFile)
+	routes, err := s.saveRoutes(file)
+	if err != nil {
+		return nil, errors.New(errSavingInformedFile)
+	} else if len(routes) == 0 {
+		return nil, errors.New(errEmptyRoutes)
+	}
+
+	return routes, nil
+}
+
+func (s *Service) saveRoutes(file *os.File) ([]*route.Route, error) {
+	var result []*route.Route
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		line := scanner.Text()
+		splitLine := strings.Split(line, ",")
+
+		price, err := strconv.ParseFloat(splitLine[2], 64)
 		if err != nil {
-			return errors.Wrap(err, errSavingRoutes)
+			return nil, errors.Wrap(err, errConvertingInformedPrice)
+		}
+
+		result, err = s.routeRepo.Save(splitLine[0], splitLine[1], price)
+		if err != nil {
+			return nil, errors.New(errSaveAllRoutesFromInformedFile)
 		}
 	}
 
-	return nil
-}
+	if err := scanner.Err(); err != nil {
+		return nil, errors.Wrap(err, errScanningInformedFile)
+	}
 
-func saveRoutes(routes []*route.Route) {
+	if len(result) == 0 {
+		return nil, errors.New(errEmptyFile)
+	}
 
+	return result, nil
 }
