@@ -10,11 +10,10 @@ import (
 )
 
 const (
-	errMissingArgs              = "The args is missing or invalid"
-	errMissingBestRoute         = "The request best route is missing or invalid"
-	errFileNotInformed          = "The file path was not informed"
-	errEmptyRoutes              = "The informed file is empty"
-	errSameOriginAndDestination = "The 'origin' field cannot be the same of the 'destination' field"
+	errMissingArgs      = "The args is missing or invalid"
+	errFileNotInformed  = "The file path was not informed"
+	errEmptyRoutes      = "The informed file is empty"
+	errMissingBestRoute = "The request best route is missing or invalid"
 )
 
 type Terminal struct {
@@ -41,7 +40,13 @@ func (t *Terminal) GetInputRoute() (*route.Route, error) {
 		return nil, err
 	}
 
-	bestRoute, err := route.NewBestRoute(points[0], points[1])
+	origin := points[0]
+	destination := points[1]
+	if err = route.ValidateRoute(origin, destination, 0, false); err != nil {
+		return nil, err
+	}
+
+	bestRoute, err := route.NewBestRoute(origin, destination)
 	if bestRoute == nil {
 		return nil, errors.New(errMissingBestRoute)
 	}
@@ -57,8 +62,6 @@ func validateInput(input string) ([]string, error) {
 	points := strings.Split(input, " - ")
 	if len(points) < 2 || points[0] == "" || points[1] == "" {
 		return nil, errors.New(errMissingArgs)
-	} else if points[0] == points[1] {
-		return nil, errors.New(errSameOriginAndDestination)
 	}
 
 	return points, nil
@@ -81,16 +84,16 @@ func (t *Terminal) LoadRoutesFromFile(pathFile string) error {
 // TerminalListener create a listener for terminal command line
 func (t *Terminal) TerminalListener() {
 	for {
-		bestRoute, err := t.GetInputRoute()
+		route, err := t.GetInputRoute()
 
 		if err != nil {
 			fmt.Printf("%s\n", err)
 		} else {
-			bestRouteStr, err := bestRoute.GetBestRouteStr()
+			bestRoute, err := t.routeService.FindBestRoute(route)
 			if err != nil {
 				fmt.Printf("%s\n", err)
 			} else {
-				fmt.Printf("best route: %s > %f\n", bestRouteStr, bestRoute.Price)
+				fmt.Printf("best route: %s > %f\n", bestRoute.BestRoute, bestRoute.Price)
 			}
 		}
 	}

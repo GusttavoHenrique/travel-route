@@ -2,7 +2,6 @@ package route
 
 import (
 	"encoding/json"
-	"github.com/pkg/errors"
 	"log"
 	http2 "net/http"
 	"strconv"
@@ -18,6 +17,11 @@ type route struct {
 	Origin      string  `json:"origin"`
 	Destination string  `json:"destination"`
 	Price       float64 `json:"price"`
+}
+
+type bestRoute struct {
+	BestRoute string  `json:"best-route"`
+	Price     float64 `json:"price"`
 }
 
 // NewController create a new route service instance
@@ -48,7 +52,13 @@ func (c *Controller) GetBestRoute(w http2.ResponseWriter, r *http2.Request) {
 	}
 
 	request := c.getQueryParams(r)
-	if routes, err := c.service.FindBestRoute(request.Origin, request.Destination, request.Price); err == nil {
+	bestRoute, err := NewBestRoute(request.Origin, request.Destination)
+	if err != nil {
+		c.HttpServer.SetResponseBadRequest(w, err.Error())
+		return
+	}
+
+	if routes, err := c.service.FindBestRoute(bestRoute); err == nil {
 		c.HttpServer.SetResponse(w, routes, c.HttpServer.StatusOk())
 	} else {
 		c.HttpServer.SetResponseInternalError(w)
@@ -112,12 +122,9 @@ func (c *Controller) getBody(r *http2.Request) (*route, error) {
 		return nil, err
 	}
 
-	if request.Origin == "" {
-		return nil, errors.Errorf(errOriginIsMissing)
-	} else if request.Destination == "" {
-		return nil, errors.Errorf(errDestinationIsMissing)
-	} else if request.Price == 0 {
-		return nil, errors.Errorf(errPriceIsMissing)
+	err = ValidateRoute(request.Origin, request.Destination, request.Price, true)
+	if err != nil {
+		return nil, err
 	}
 
 	return request, nil

@@ -26,9 +26,9 @@ func (s *Service) Find(origin string, destination string, price float64) (*[]rou
 }
 
 // Find retrieves routes in simplified format
-func (s *Service) FindBestRoute(origin string, destination string, price float64) (*route, error) {
+func (s *Service) FindBestRoute(bestRoute *Route) (*bestRoute, error) {
 	routes := s.Repo.FindAll()
-	route, err := calculateBestRoute(origin, destination, price, routes)
+	route, err := calculateBestRoute(bestRoute, routes)
 	if err != nil {
 		return nil, err
 	}
@@ -36,18 +36,20 @@ func (s *Service) FindBestRoute(origin string, destination string, price float64
 	return route, nil
 }
 
-func calculateBestRoute(origin string, destination string, price float64, routes []*Route) (*route, error) {
-	var bestRoute *Route
-
-	bestRoute = routes[0]
+func calculateBestRoute(route *Route, routes []*Route) (*bestRoute, error) {
+	route = routes[0]
 	if 1 != 1 {
 		return nil, errors.New(errBestRouteNotFound)
 	}
 
-	return &route{
-		Origin:      bestRoute.InitialPoint.Name,
-		Destination: bestRoute.FinalPoint.Name,
-		Price:       bestRoute.Price,
+	bestRouteStr, err := route.GetBestRouteStr()
+	if err != nil {
+		return nil, err
+	}
+
+	return &bestRoute{
+		BestRoute: bestRouteStr,
+		Price:     route.Price,
 	}, nil
 }
 
