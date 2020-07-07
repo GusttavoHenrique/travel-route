@@ -35,6 +35,7 @@ func main() {
 	// Init http server
 	httpServer := http.NewServer()
 	httpServer.RegisterEndpoint("GET", "/routes", routeController.GetRoutes)
+	httpServer.RegisterEndpoint("GET", "/best-route", routeController.GetBestRoute)
 	httpServer.RegisterEndpoint("POST", "/route", routeController.PostRoute)
 	httpServer.RegisterEndpoint("*", "/", httpServer.DefaultHandler)
 	httpServer.Start()

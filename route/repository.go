@@ -9,9 +9,10 @@ type Repository struct {
 }
 
 const (
-	errDuplicatedRoutes = "Found duplicated routes with distinct prices"
-	errInitRoute        = "Error initializing route"
-	errRoutesNotFound   = "Routes not found"
+	errDuplicatedRoutesSamePrice     = "Found duplicated routes with same prices"
+	errDuplicatedRoutesDistinctPrice = "Found duplicated routes with distinct prices"
+	errInitRoute                     = "Error initializing route"
+	errRoutesNotFound                = "Routes not found"
 )
 
 // Save save route in database
@@ -28,32 +29,31 @@ func (repo *Repository) Save(origin string, destination string, price float64) (
 func (repo *Repository) validateAndSave(origin string, destination string, price float64) error {
 	routes := repo.Db.FindRoutes()
 
-	unique := func(rs []*Route) int {
+	err := func(rs []*Route) error {
 		for _, r := range rs {
 			if r.InitialPoint.Name == origin && r.FinalPoint.Name == destination {
-				if r.Price != price {
-					return -1
+				if r.Price == price {
+					return errors.New(errDuplicatedRoutesSamePrice)
 				}
-				return 0
+				return errors.New(errDuplicatedRoutesDistinctPrice)
 			}
 		}
-		return 1
+		return nil
 	}(routes)
 
-	if unique == -1 {
-		return errors.New(errDuplicatedRoutes)
-	} else if unique == 1 {
-		newRoute, err := NewRoute(origin, destination, price)
-		if err != nil {
-			return errors.New(errInitRoute)
-		}
-		repo.Db.SaveRoute(newRoute)
-		return nil
+	if err != nil {
+		return err
 	}
 
+	newRoute, err := NewRoute(origin, destination, price)
+	if err != nil {
+		return errors.New(errInitRoute)
+	}
+	repo.Db.SaveRoute(newRoute)
 	return nil
 }
 
+// FindAll retrieves saved routes
 func (repo *Repository) FindAll() []*Route {
 	return repo.Db.FindRoutes()
 }

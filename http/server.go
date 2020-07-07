@@ -117,6 +117,10 @@ func (s *Server) SetResponseCreated(writer http.ResponseWriter) {
 	s.SetResponse(writer, nil, http.StatusCreated)
 }
 
+func (s *Server) SetResponseBadRequest(writer http.ResponseWriter, message string) {
+	s.SetResponseError(writer, message, http.StatusBadRequest)
+}
+
 func (s *Server) SetResponseInternalError(writer http.ResponseWriter) {
 	s.SetResponseError(writer, messageInternalError, http.StatusInternalServerError)
 }

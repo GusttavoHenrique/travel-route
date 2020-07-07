@@ -2,6 +2,7 @@ package route
 
 import (
 	"encoding/json"
+	"github.com/pkg/errors"
 	"log"
 	http2 "net/http"
 	"strconv"
@@ -40,17 +41,36 @@ func (c *Controller) GetRoutes(w http2.ResponseWriter, r *http2.Request) {
 	}
 }
 
+// GetBestRoute the handler to get best route
+func (c *Controller) GetBestRoute(w http2.ResponseWriter, r *http2.Request) {
+	if err := c.HttpServer.ValidGet(w, r); err != nil {
+		return
+	}
+
+	request := c.getQueryParams(r)
+	if routes, err := c.service.FindBestRoute(request.Origin, request.Destination, request.Price); err == nil {
+		c.HttpServer.SetResponse(w, routes, c.HttpServer.StatusOk())
+	} else {
+		c.HttpServer.SetResponseInternalError(w)
+	}
+}
+
 // PostRoute the handler to post route
 func (c *Controller) PostRoute(w http2.ResponseWriter, r *http2.Request) {
 	if err := c.HttpServer.ValidPost(w, r); err != nil {
 		return
 	}
 
-	request := c.getBody(r)
-	if err := c.service.Save(request.Origin, request.Destination, request.Price); err != nil {
+	request, err := c.getBody(r)
+	if err != nil {
+		c.HttpServer.SetResponseBadRequest(w, err.Error())
+		return
+	}
+
+	if err := c.service.Save(request.Origin, request.Destination, request.Price); err == nil {
 		c.HttpServer.SetResponseCreated(w)
 	} else {
-		c.HttpServer.SetResponseInternalError(w)
+		c.HttpServer.SetResponseBadRequest(w, err.Error())
 	}
 }
 
@@ -83,14 +103,22 @@ func (c *Controller) getQueryParam(r *http2.Request, key string) string {
 	return keys[0]
 }
 
-func (c *Controller) getBody(r *http2.Request) *route {
+func (c *Controller) getBody(r *http2.Request) (*route, error) {
 	var request *route
 
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		log.Print(err.Error(), c.HttpServer.StatusBadRequest())
-		return nil
+		return nil, err
 	}
 
-	return request
+	if request.Origin == "" {
+		return nil, errors.Errorf(errOriginIsMissing)
+	} else if request.Destination == "" {
+		return nil, errors.Errorf(errDestinationIsMissing)
+	} else if request.Price == 0 {
+		return nil, errors.Errorf(errPriceIsMissing)
+	}
+
+	return request, nil
 }
