@@ -59,7 +59,7 @@ func validateInput(input string) ([]string, error) {
 		return nil, errors.New(errMissingArgs)
 	}
 
-	points := strings.Split(input, " - ")
+	points := strings.Split(strings.TrimSpace(input), "-")
 	if len(points) < 2 || points[0] == "" || points[1] == "" {
 		return nil, errors.New(errMissingArgs)
 	}

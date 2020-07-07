@@ -59,12 +59,14 @@ func (s *Service) Save(origin string, destination string, price float64) error {
 	if err != nil {
 		return err
 	}
-	saveInFile(origin, destination, price)
+
+	s.saveInFile(origin, destination, price)
 	return nil
 }
 
-func saveInFile(origin string, destination string, price float64) {
-	file, err := os.OpenFile("./resource/input-routes.csv", os.O_APPEND|os.O_WRONLY, 0644)
+func (s *Service) saveInFile(origin string, destination string, price float64) {
+	filePath := s.Repo.getFile()
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)
 	}

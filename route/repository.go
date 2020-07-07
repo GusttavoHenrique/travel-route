@@ -15,6 +15,10 @@ const (
 	errRoutesNotFound                = "Routes not found"
 )
 
+func (repo *Repository) SaveFile(filePath string) {
+	repo.Db.saveFileRoute(filePath)
+}
+
 // Save save route in database
 func (repo *Repository) Save(origin string, destination string, price float64) ([]*Route, error) {
 	err := repo.validateAndSave(origin, destination, price)
@@ -22,12 +26,12 @@ func (repo *Repository) Save(origin string, destination string, price float64) (
 		return nil, err
 	}
 
-	routes := repo.Db.FindRoutes()
+	routes := repo.Db.findRoutes()
 	return routes, nil
 }
 
 func (repo *Repository) validateAndSave(origin string, destination string, price float64) error {
-	routes := repo.Db.FindRoutes()
+	routes := repo.Db.findRoutes()
 
 	err := func(rs []*Route) error {
 		for _, r := range rs {
@@ -49,20 +53,20 @@ func (repo *Repository) validateAndSave(origin string, destination string, price
 	if err != nil {
 		return errors.New(errInitRoute)
 	}
-	repo.Db.SaveRoute(newRoute)
+	repo.Db.saveRoute(newRoute)
 	return nil
 }
 
 // FindAll retrieves saved routes
 func (repo *Repository) FindAll() []*Route {
-	return repo.Db.FindRoutes()
+	return repo.Db.findRoutes()
 }
 
 // Find all saved routes in database
 func (repo *Repository) Find(origin string, destination string, price float64) (*[]route, error) {
 	result := make([]route, 0)
 
-	tables := repo.Db.FindRoutes()
+	tables := repo.Db.findRoutes()
 	for _, r := range tables {
 		success := true
 		validateField(r.InitialPoint.Name, origin, &success, origin != "")
@@ -90,4 +94,8 @@ func validateField(tableField interface{}, field interface{}, success *bool, val
 	if validate {
 		*success = *success && tableField == field
 	}
+}
+
+func (repo *Repository) getFile() string {
+	return repo.Db.filePath
 }

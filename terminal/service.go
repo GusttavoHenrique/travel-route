@@ -30,6 +30,8 @@ func (s *Service) saveRoutesFromFile(filePath string) ([]*route.Route, error) {
 		return nil, errors.New(errReadingRoutesFromFile)
 	}
 
+	s.routeRepo.SaveFile(filePath)
+
 	routes, err := s.saveRoutes(file)
 	if err != nil {
 		return nil, errors.New(errSavingInformedFile)
@@ -43,10 +45,10 @@ func (s *Service) saveRoutesFromFile(filePath string) ([]*route.Route, error) {
 func (s *Service) saveRoutes(file *os.File) ([]*route.Route, error) {
 	var result []*route.Route
 
-	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanWords)
-	for scanner.Scan() {
-		line := scanner.Text()
+	scan := bufio.NewScanner(file)
+	scan.Split(bufio.ScanWords)
+	for scan.Scan() {
+		line := scan.Text()
 		splitLine := strings.Split(line, ",")
 
 		price, err := strconv.ParseFloat(splitLine[2], 64)
@@ -60,7 +62,7 @@ func (s *Service) saveRoutes(file *os.File) ([]*route.Route, error) {
 		}
 	}
 
-	if err := scanner.Err(); err != nil {
+	if err := scan.Err(); err != nil {
 		return nil, errors.Wrap(err, errScanningInformedFile)
 	}
 
