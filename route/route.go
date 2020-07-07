@@ -68,9 +68,10 @@ func createAndValidateRoute(origin string, destination string) (*Route, error) {
 	}, nil
 }
 
+// NewBestRoute retrieve a string with the best route
 func (route *Route) GetBestRouteStr() (string, error) {
 	list := route.BestRoute
-	if len(list) != 0 {
+	if len(list) == 0 {
 		return "", errors.New(errBestRouteNotFound)
 	}
 
