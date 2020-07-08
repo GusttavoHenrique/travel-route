@@ -4,7 +4,7 @@ Implementation of the minimum cost problem between an origin point and a destina
 ## Available operations
 The following sections present the available REST and Shel operations
 
-### Route register:
+### Route register
 Creates a new route
 
 ```
@@ -30,7 +30,7 @@ Response code:
 204 Created
 ```
 
-### Find routes:
+### Find routes
 Retrieves all registered routes
 
 ```
@@ -38,10 +38,10 @@ GET http://localhost:8080/routes
 ```
 
 Available query parameters:
-```TEXT
-    origin: the origin of route. Any string value. eg.: 'SAO'. This field is not mandatory.
-    destination: the destination of route. Any string value. eg.: 'NAT'. This field is not mandatory.
-    price: the price of route. Any number value. eg.: 10. This field is not mandatory.
+```MARKDOWN
+`origin`: the origin of route. Any string value. eg.: 'SAO'. This field is not mandatory.
+`destination`: the destination of route. Any string value. eg.: 'NAT'. This field is not mandatory.
+`price`: the price of route. Any number value. eg.: 10. This field is not mandatory.
 ```
 
 Response body:
