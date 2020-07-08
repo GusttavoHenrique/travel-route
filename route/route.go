@@ -11,6 +11,7 @@ type Route struct {
 	FinalPoint   *point.Point
 	Price        float64
 	BestRoute    []*point.Point
+	Neighbors    []*point.Point
 }
 
 const (

@@ -11,7 +11,7 @@ const (
 )
 
 func TestRouteCreation(t *testing.T) {
-	route, err := createAndValidateRoute(origin, destination)
+	route, err := createAndValidateRoute(origin, destination, 0, false)
 	validateNewRoute(route, err, t)
 
 	if route.InitialPoint.Name == route.FinalPoint.Name {

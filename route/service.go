@@ -2,7 +2,6 @@ package route
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"log"
 	"os"
 )
@@ -27,30 +26,15 @@ func (s *Service) Find(origin string, destination string, price float64) (*[]rou
 
 // Find retrieves routes in simplified format
 func (s *Service) FindBestRoute(bestRoute *Route) (*bestRoute, error) {
-	routes := s.Repo.FindAll()
+	var routes []*Route
+	copy(routes, s.Repo.FindAll())
+
 	route, err := calculateBestRoute(bestRoute, routes)
 	if err != nil {
 		return nil, err
 	}
 
 	return route, nil
-}
-
-func calculateBestRoute(route *Route, routes []*Route) (*bestRoute, error) {
-	route = routes[0]
-	if 1 != 1 {
-		return nil, errors.New(errBestRouteNotFound)
-	}
-
-	bestRouteStr, err := route.GetBestRouteStr()
-	if err != nil {
-		return nil, err
-	}
-
-	return &bestRoute{
-		BestRoute: bestRouteStr,
-		Price:     route.Price,
-	}, nil
 }
 
 // Save create a route

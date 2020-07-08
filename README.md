@@ -67,12 +67,17 @@ Retrieves the best route from an informed origin to an informed destination
 GET http://localhost:8080/best-route
 ```
 
+Available query parameters:
+```MARKDOWN
+`origin`: the origin of route. Any string value. eg.: 'SAO'. This field is mandatory.
+`destination`: the destination of route. Any string value. eg.: 'NAT'. This field is mandatory.
+```
+
 Response body:
 ```JSON
 {
-    "origin": "Type string. eg.: 'SAO'. This field is mandatory.",
-    "destination": "Type string. eg.: 'NAT'. This field is mandatory.",
-    "price": "Type number. eg.: 10. This field is mandatory."
+  "best-route": "Type string. eg.: 'SAO-RIO-NAT'. This field is mandatory.",
+  "price": "Type number. eg.: 10. This field is mandatory."
 }
 ```
 
@@ -86,12 +91,12 @@ Retrieves the best calculated route
 
 Shel input example:
 ```SHELL
-$ please enter the route: GRU-CGD
+> please enter the route: GRU-CGD
 ```
 
 Shel output example:
 ```SHELL
-$ best route: GRU - BRC - SCL - ORL - CDG > $40
+> best route: GRU - BRC - SCL - ORL - CDG > $40
 ```
 
 ## Project structure
@@ -112,6 +117,8 @@ $ best route: GRU - BRC - SCL - ORL - CDG > $40
 │   └── `controller_test.go` - tests implementation of `controller.go`
 │   └── `service.go` - defines the route procedures
 │   └── `service_test.go` - tests implementation of `service.go`
+│   └── `dijkstra.go` - implementation of dijkstra's algorithm 
+│   └── `dijkstra_test.go` - tests implementation of `dijkstra.go`
 │   └── `repository.go` - defines the route database operations
 │   └── `repository_test.go` - tests implementation of `repository.go`
 │   └── `db.go` - implementation of a singleton to simulate the database 
@@ -140,7 +147,7 @@ $ best route: GRU - BRC - SCL - ORL - CDG > $40
 * Open the CLI and navigate to the project's root directory
 * Execute start command
 ```SHELL
-$ ./mysolution.sh /<your_file_directory>/<your_input_file>.csv
+> ./mysolution.sh /<your_file_directory>/<your_input_file>.csv
 ```
 
 Input file example
