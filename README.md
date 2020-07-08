@@ -130,7 +130,7 @@ Shel output example:
 │   └── `service_test.go` - tests implementation of `service.go`
 ├── `.gitignore` - the gitignore file
 ├── `application.go` - the main application file
-├── `application_test.go` - tests implementation of application.go
+├── `application_test.go` - tests implementation of `application.go`
 ├── `mysolution.sh` - a bash script to initialize the application
 ├── `Dockerfile` - a Docker file definition to application container
 ├── `go.mod` - with the application dependencies
