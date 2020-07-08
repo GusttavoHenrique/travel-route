@@ -150,7 +150,7 @@ Shel output example:
 > ./mysolution.sh /<your_file_directory>/<your_input_file>.csv
 ```
 
-Input file example
+Input file example:
 ```CSV
 GRU,BRC,10
 BRC,SCL,5
