@@ -140,7 +140,6 @@ Shel output example:
 ## Dependencies
 * Linux
 * Docker
-* Golang
 
 ## Starting project
 * Clone the project to host
@@ -161,9 +160,7 @@ ORL,CDG,5
 SCL,ORL,20
 ```
 
-After the command is being execute, a Docker container starts, and the application instance is ready. The input file is copied 
-to the tmp directory (`/tmp/travel-route`) and the entire operation is performed using this copy file. When the application starts, 
-the file copy is opened in gedit to display the new routes entered.
+After the command is being execute, a Docker container starts, and the application instance is ready.
 
 ## Design of application
 The initial flow of the application opens two new execution flows for the REST (`controller.go`) and CLI (`handler.go`) requests. 

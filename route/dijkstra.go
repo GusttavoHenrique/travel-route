@@ -12,7 +12,7 @@ func calculateBestRoute(initialRoute *Route, routes []*Route) (*bestRoute, error
 	initialRoute.BestRoute = append(initialRoute.BestRoute, initialRoute.InitialPoint)
 	otherPoint := &point.Point{Name: "RIO"}
 	initialRoute.BestRoute = append(initialRoute.BestRoute, otherPoint)
-	initialRoute.BestRoute = append(initialRoute.BestRoute, initialRoute.InitialPoint)
+	initialRoute.BestRoute = append(initialRoute.BestRoute, initialRoute.FinalPoint)
 	initialRoute.Price = 10
 
 	if 1 != 1 {
